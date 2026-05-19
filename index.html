@@ -1,0 +1,1217 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Партнёрское обучение — Мануфактура</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#eef4fb; --surface:#fff; --surface2:#f0f6ff; --border:#c8daf0;
+    --accent:#2563eb; --accent2:#3b82f6; --accent-light:#dbeafe;
+    --text:#1e293b; --muted:#64748b;
+    --done:#16a34a; --done-light:#dcfce7;
+    --locked:#cbd5e1; --locked-text:#94a3b8;
+    --orange:#f97316; --orange-light:#fff7ed;
+    --shadow:0 2px 12px rgba(37,99,235,0.08);
+    --shadow-hover:0 6px 24px rgba(37,99,235,0.15);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+
+  header{background:var(--surface);border-bottom:1px solid var(--border);padding:18px 40px;text-align:center;box-shadow:var(--shadow);}
+  .logo{font-family:'Playfair Display',serif;font-size:12px;letter-spacing:5px;text-transform:uppercase;color:var(--accent);margin-bottom:3px;}
+  header h1{font-size:clamp(20px,2.8vw,30px);font-weight:800;color:var(--text);letter-spacing:-0.5px;}
+  header h1 span{color:var(--accent);}
+
+  .nav-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;padding:18px 40px 0;max-width:1200px;margin:0 auto;}
+  .nav-item{position:relative;border-radius:10px;padding:9px 11px;cursor:pointer;transition:all 0.22s ease;border:1.5px solid var(--border);background:var(--surface);display:flex;align-items:center;gap:8px;box-shadow:var(--shadow);}
+  .nav-item.active{border-color:var(--accent);background:var(--accent-light);box-shadow:var(--shadow-hover);}
+  .nav-item.done{border-color:var(--done);background:var(--done-light);}
+  .nav-item.done .nav-num{background:var(--done);}
+  .nav-item.locked{opacity:0.45;cursor:not-allowed;background:#f8fafc;}
+  .nav-item.locked:hover{transform:none!important;box-shadow:var(--shadow)!important;}
+  .nav-item:not(.locked):hover{transform:translateY(-2px);box-shadow:var(--shadow-hover);border-color:var(--accent2);}
+  .nav-num{width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .nav-item.locked .nav-num{background:var(--locked);color:var(--locked-text);}
+  .nav-label{font-size:10px;font-weight:600;line-height:1.3;color:var(--text);}
+  .nav-item.locked .nav-label{color:var(--locked-text);}
+  .nav-lock{margin-left:auto;font-size:11px;}
+
+  .progress-bar-wrap{max-width:1200px;margin:11px auto 0;padding:0 40px;}
+  .progress-bar{height:4px;background:var(--border);border-radius:99px;overflow:hidden;}
+  .progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:99px;transition:width 0.5s ease;}
+  .progress-text{font-size:11px;color:var(--muted);text-align:right;margin-top:4px;}
+
+  .content-wrap{max-width:1100px;margin:22px auto 60px;padding:0 40px;}
+  .slide{display:none;animation:fadeUp 0.35s ease forwards;}
+  .slide.active{display:block;}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+  .slide-header{display:flex;align-items:flex-start;gap:16px;margin-bottom:24px;}
+  .slide-num{font-size:60px;font-weight:800;line-height:1;color:var(--accent);opacity:0.12;font-family:'Playfair Display',serif;flex-shrink:0;margin-top:-4px;}
+  .slide-title-block h2{font-size:clamp(20px,2.8vw,32px);font-weight:800;line-height:1.15;letter-spacing:-0.4px;}
+  .slide-title-block h2 span{color:var(--accent);}
+  .slide-subtitle{font-size:13px;color:var(--muted);margin-top:4px;}
+
+  .card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-bottom:20px;}
+  .card{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:17px;transition:all 0.2s;box-shadow:var(--shadow);}
+  .card:hover{border-color:var(--accent2);transform:translateY(-2px);box-shadow:var(--shadow-hover);}
+  .card-icon{font-size:22px;margin-bottom:8px;}
+  .card h3{font-size:13px;font-weight:700;margin-bottom:5px;}
+  .card p{font-size:12px;color:var(--muted);line-height:1.6;}
+
+  .highlight-box{background:var(--accent-light);border:1.5px solid rgba(37,99,235,0.25);border-radius:14px;padding:16px 20px;margin-bottom:16px;}
+  .highlight-box p{font-size:13.5px;line-height:1.75;}
+  .highlight-box strong{color:var(--accent);}
+  .highlight-box.orange{background:var(--orange-light);border-color:rgba(249,115,22,0.3);}
+  .highlight-box.orange strong{color:var(--orange);}
+  .highlight-box.green{background:var(--done-light);border-color:rgba(22,163,74,0.3);}
+  .highlight-box.green strong{color:var(--done);}
+  .highlight-box.purple{background:#f5f3ff;border-color:rgba(124,58,237,0.3);}
+  .highlight-box.purple strong{color:#7c3aed;}
+
+  .feature-list{margin-bottom:16px;}
+  .feature-item{display:flex;gap:11px;align-items:flex-start;padding:10px 14px;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;margin-bottom:6px;box-shadow:var(--shadow);font-size:12.5px;line-height:1.6;transition:all 0.2s;}
+  .feature-item:hover{border-color:var(--accent2);transform:translateX(3px);}
+  .feature-icon{font-size:17px;flex-shrink:0;margin-top:1px;}
+
+  .pain-card{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:16px;margin-bottom:11px;box-shadow:var(--shadow);transition:all 0.2s;}
+  .pain-card:hover{border-color:var(--orange);transform:translateY(-2px);}
+  .pain-header{display:flex;align-items:center;gap:10px;margin-bottom:9px;}
+  .pain-num{background:var(--orange);color:#fff;width:24px;height:24px;border-radius:50%;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .pain-card h3{font-size:13.5px;font-weight:700;}
+  .pain-body{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+  .pain-col{font-size:12px;color:var(--muted);line-height:1.6;}
+  .pain-col strong{color:var(--text);display:block;margin-bottom:3px;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;}
+  .pain-col em{font-style:italic;color:var(--accent);}
+
+  .q-block{background:var(--surface);border:1.5px solid var(--border);border-radius:13px;padding:16px 20px;margin-bottom:11px;box-shadow:var(--shadow);}
+  .q-block h4{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--accent);margin-bottom:9px;}
+  .q-item{display:flex;align-items:flex-start;gap:9px;padding:7px 0;border-bottom:1px solid var(--border);font-size:12.5px;color:var(--text);line-height:1.55;}
+  .q-item:last-child{border-bottom:none;}
+  .q-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);flex-shrink:0;margin-top:7px;}
+  .q-signal{background:#fff7ed;border:1px solid rgba(249,115,22,0.3);border-radius:8px;padding:4px 9px;font-size:11.5px;color:var(--orange);font-style:italic;margin-top:4px;display:inline-block;}
+
+  .step-list{margin-bottom:16px;}
+  .step-item{display:flex;gap:13px;align-items:flex-start;padding:13px;background:var(--surface);border:1.5px solid var(--border);border-radius:12px;margin-bottom:8px;box-shadow:var(--shadow);transition:all 0.2s;}
+  .step-item:hover{border-color:var(--accent);transform:translateX(3px);}
+  .step-circle{width:32px;height:32px;border-radius:50%;background:var(--accent-light);border:2px solid var(--accent);color:var(--accent);font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .step-content h4{font-size:13px;font-weight:700;margin-bottom:3px;}
+  .step-content p{font-size:12px;color:var(--muted);line-height:1.55;}
+
+  .money-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:11px;margin-bottom:16px;}
+  .money-card{background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:14px;padding:17px;color:#fff;text-align:center;box-shadow:0 4px 20px rgba(37,99,235,0.25);}
+  .mc-label{font-size:10px;opacity:0.8;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;}
+  .mc-value{font-size:24px;font-weight:800;font-family:'Playfair Display',serif;}
+  .mc-sub{font-size:11px;opacity:0.75;margin-top:3px;}
+
+  /* CLIENTS NICHE CHECK */
+  .niche-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:10px;margin-bottom:18px;}
+  .niche-card{background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:14px;cursor:pointer;transition:all 0.2s;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:6px;}
+  .niche-card:hover{border-color:var(--accent2);transform:translateY(-2px);box-shadow:var(--shadow-hover);}
+  .niche-card.selected{border-color:var(--accent);background:var(--accent-light);}
+  .niche-icon{font-size:22px;}
+  .niche-name{font-size:13px;font-weight:700;}
+  .niche-card label{display:flex;align-items:center;gap:8px;cursor:pointer;}
+  .niche-card input[type=checkbox]{width:16px;height:16px;accent-color:var(--accent);cursor:pointer;}
+  .niche-result{background:var(--done-light);border:1.5px solid rgba(22,163,74,0.4);border-radius:12px;padding:14px;font-size:13px;color:var(--text);line-height:1.6;display:none;margin-top:4px;}
+
+  /* CASES */
+  .social-links{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:18px;}
+  .social-btn{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:10px;font-size:13px;font-weight:700;text-decoration:none;transition:all 0.2s;border:1.5px solid;}
+  .social-btn:hover{transform:translateY(-2px);box-shadow:var(--shadow-hover);}
+  .btn-tg{background:#e8f4fd;border-color:#0088cc;color:#0088cc;}
+  .btn-tg:hover{background:#0088cc;color:#fff;}
+  .btn-ig{background:#fce8f3;border-color:#e1306c;color:#e1306c;}
+  .btn-ig:hover{background:#e1306c;color:#fff;}
+  .btn-vk{background:#e8f0ff;border-color:#0077ff;color:#0077ff;}
+  .btn-vk:hover{background:#0077ff;color:#fff;}
+  .btn-max{background:#fff3e8;border-color:#ff6d00;color:#ff6d00;}
+  .btn-max:hover{background:#ff6d00;color:#fff;}
+
+  .case-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:11px;margin-bottom:16px;}
+  .case-card{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:16px;box-shadow:var(--shadow);transition:all 0.2s;}
+  .case-card:hover{border-color:var(--accent2);transform:translateY(-2px);}
+  .case-tag{display:inline-block;background:var(--accent-light);color:var(--accent);font-size:10px;font-weight:800;letter-spacing:1px;text-transform:uppercase;padding:3px 8px;border-radius:99px;margin-bottom:8px;}
+  .case-card h4{font-size:13px;font-weight:700;margin-bottom:5px;}
+  .case-card p{font-size:12px;color:var(--muted);line-height:1.55;}
+  .case-result{font-size:13px;font-weight:700;color:var(--done);margin-top:7px;}
+
+  /* QUIZ */
+  .quiz-block{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:20px;margin-bottom:16px;box-shadow:var(--shadow);}
+  .quiz-block h4{font-size:14px;font-weight:800;margin-bottom:12px;color:var(--text);}
+  .quiz-input{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:'Manrope',sans-serif;outline:none;transition:border-color 0.2s;background:var(--bg);}
+  .quiz-input:focus{border-color:var(--accent);}
+  .quiz-feedback{margin-top:8px;font-size:12.5px;font-weight:600;padding:8px 12px;border-radius:8px;display:none;}
+  .quiz-feedback.ok{background:var(--done-light);color:var(--done);display:block;}
+  .quiz-feedback.err{background:#fef2f2;color:#dc2626;display:block;}
+  .quiz-btn{margin-top:10px;padding:9px 20px;background:var(--accent);color:#fff;border:none;border-radius:9px;font-family:'Manrope',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s;}
+  .quiz-btn:hover{background:#1d4ed8;transform:translateY(-1px);}
+
+  /* TRANSFER */
+  .transfer-box{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:18px;margin-bottom:12px;box-shadow:var(--shadow);}
+  .transfer-box h3{font-size:14px;font-weight:800;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+  .transfer-box ul{list-style:none;display:flex;flex-direction:column;gap:8px;}
+  .transfer-box li{font-size:13px;color:var(--muted);line-height:1.6;display:flex;gap:10px;align-items:flex-start;}
+  .transfer-box li::before{content:'•';color:var(--accent);font-weight:900;flex-shrink:0;}
+  .partner-get{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:11px;margin-bottom:16px;}
+  .pg-card{background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:15px;box-shadow:var(--shadow);}
+  .pg-icon{font-size:24px;margin-bottom:8px;}
+  .pg-card h4{font-size:13px;font-weight:700;margin-bottom:4px;}
+  .pg-card p{font-size:12px;color:var(--muted);line-height:1.55;}
+
+  /* CODE UNLOCK */
+  .code-block{background:linear-gradient(135deg,#f0f6ff,#dbeafe);border:1.5px solid var(--accent);border-radius:14px;padding:20px;margin-bottom:16px;text-align:center;}
+  .code-block h3{font-size:15px;font-weight:800;margin-bottom:8px;color:var(--accent);}
+  .code-block p{font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.6;}
+  .code-input-row{display:flex;gap:8px;max-width:400px;margin:0 auto;}
+  .code-input{flex:1;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:'Manrope',sans-serif;outline:none;transition:border-color 0.2s;background:#fff;text-align:center;}
+  .code-input:focus{border-color:var(--accent);}
+  .code-btn{padding:11px 18px;background:var(--accent);color:#fff;border:none;border-radius:10px;font-family:'Manrope',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s;white-space:nowrap;}
+  .code-btn:hover{background:#1d4ed8;}
+  .code-feedback{margin-top:10px;font-size:13px;font-weight:600;padding:9px 14px;border-radius:9px;display:none;}
+  .code-feedback.ok{background:var(--done-light);color:var(--done);display:block;}
+  .code-feedback.err{background:#fef2f2;color:#dc2626;display:block;}
+  .code-success{display:none;margin-top:14px;}
+
+  /* SUBS (slide 9) */
+  .sub-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-bottom:16px;}
+  .sub-item{background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:15px;cursor:pointer;transition:all 0.2s;position:relative;box-shadow:var(--shadow);}
+  .sub-item:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:var(--shadow-hover);}
+  .sub-item.done-sub{border-color:var(--done);background:var(--done-light);}
+  .si-num{font-size:10px;font-weight:800;letter-spacing:2px;color:var(--accent);margin-bottom:4px;text-transform:uppercase;}
+  .sub-item.done-sub .si-num{color:var(--done);}
+  .sub-item h4{font-size:12.5px;font-weight:700;}
+  .sub-item p{font-size:11.5px;color:var(--muted);margin-top:4px;line-height:1.5;}
+  .sub-check{position:absolute;top:11px;right:11px;width:19px;height:19px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;transition:all 0.2s;}
+  .sub-item.done-sub .sub-check{background:var(--done);border-color:var(--done);color:#fff;}
+  .sub-note{font-size:12px;color:var(--muted);margin-bottom:11px;padding:8px 12px;background:var(--surface);border-radius:8px;border-left:3px solid var(--accent);box-shadow:var(--shadow);}
+
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:16px;}
+  .two-col-box{border-radius:12px;padding:13px;font-size:13px;line-height:1.6;}
+  .box-red{background:#fef2f2;border:1.5px solid #fecaca;}
+  .box-red .box-label{font-size:11px;font-weight:800;color:#ef4444;letter-spacing:1px;margin-bottom:6px;}
+  .box-green{background:var(--done-light);border:1.5px solid rgba(22,163,74,0.3);}
+  .box-green .box-label{font-size:11px;font-weight:800;color:var(--done);letter-spacing:1px;margin-bottom:6px;}
+
+  .btn-row{display:flex;gap:10px;justify-content:flex-end;margin-top:26px;padding-top:16px;border-top:1.5px solid var(--border);}
+  .btn{padding:10px 22px;border-radius:10px;font-family:'Manrope',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border:none;transition:all 0.2s;}
+  .btn-prev{background:var(--surface);color:var(--muted);border:1.5px solid var(--border);box-shadow:var(--shadow);}
+  .btn-prev:hover:not(:disabled){color:var(--text);border-color:var(--accent);}
+  .btn-next{background:var(--accent);color:#fff;box-shadow:0 4px 14px rgba(37,99,235,0.25);}
+  .btn-next:hover:not(:disabled){background:#1d4ed8;transform:translateY(-2px);box-shadow:0 8px 24px rgba(37,99,235,0.35);}
+  .btn:disabled{opacity:0.35;cursor:not-allowed;transform:none!important;}
+
+  .completion-badge{display:inline-flex;align-items:center;gap:8px;background:var(--done-light);border:1.5px solid var(--done);color:var(--done);font-size:13px;font-weight:700;padding:8px 16px;border-radius:99px;margin-top:8px;}
+
+  @media(max-width:768px){
+    .nav-grid{grid-template-columns:repeat(2,1fr);padding:12px 16px 0;}
+    .content-wrap,.progress-bar-wrap{padding:0 16px;}
+    header{padding:14px 16px;}
+    .btn-row{flex-direction:column;}
+    .btn{width:100%;}
+    .slide-num{font-size:42px;}
+    .pain-body,.two-col{grid-template-columns:1fr;}
+    .code-input-row{flex-direction:column;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Мануфактура</div>
+  <h1>Партнёрское <span>обучение</span></h1>
+</header>
+
+<nav class="nav-grid" id="navGrid"></nav>
+
+<div class="progress-bar-wrap">
+  <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  <div class="progress-text" id="progressText">0 из 9 пройдено</div>
+</div>
+
+<div class="content-wrap">
+
+<!-- ══════════════════════════════════════════ -->
+<!-- SLIDE 1: Оглавление -->
+<!-- ══════════════════════════════════════════ -->
+<div class="slide active" id="slide-1">
+  <div class="slide-header">
+    <div class="slide-num">01</div>
+    <div class="slide-title-block"><h2>Оглавление</h2><div class="slide-subtitle">Программа партнёрского обучения — 9 модулей</div></div>
+  </div>
+  <div class="highlight-box">
+    <p>Проходите модули <strong>последовательно</strong> — каждый следующий открывается после завершения предыдущего. <strong>Поехали!</strong></p>
+  </div>
+  <div class="card-grid">
+    <div class="card"><div class="card-icon">🏭</div><h3>О нас</h3><p>Компания Мануфактура, ваша роль партнёра и пример заработка.</p></div>
+    <div class="card"><div class="card-icon">📋</div><h3>Что такое AmoCRM</h3><p>Функции системы, польза для продажников, мобильная версия.</p></div>
+    <div class="card"><div class="card-icon">😣</div><h3>Боли без CRM</h3><p>5 ключевых болей бизнеса без системы управления продажами.</p></div>
+    <div class="card"><div class="card-icon">🔍</div><h3>Выявление болей</h3><p>Как задавать вопросы, находить и фиксировать боль клиента.</p></div>
+    <div class="card"><div class="card-icon">🤝</div><h3>Клиенты</h3><p>Портрет целевого клиента — и есть ли такие в вашем окружении?</p></div>
+    <div class="card"><div class="card-icon">⭐</div><h3>Кейсы</h3><p>Реальные результаты клиентов + наши соцсети с примерами.</p></div>
+    <div class="card"><div class="card-icon">🔁</div><h3>Как передавать клиентов</h3><p>Пошаговый процесс и что вы получаете как партнёр.</p></div>
+    <div class="card"><div class="card-icon">🚀</div><h3>Как найти новых клиентов</h3><p>5 каналов: тёплый круг, лотерея, Авито, нетворк, чаты.</p></div>
+  </div>
+  <div class="btn-row">
+    <button class="btn btn-prev" disabled>← Назад</button>
+    <button class="btn btn-next" onclick="completeAndNext()">Далее →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- SLIDE 2: О нас -->
+<!-- ══════════════════════════════════════════ -->
+<div class="slide" id="slide-2">
+  <div class="slide-header">
+    <div class="slide-num">02</div>
+    <div class="slide-title-block"><h2>О <span>нас</span></h2><div class="slide-subtitle">Что такое Мануфактура и ваша роль в партнёрстве</div></div>
+  </div>
+  <div class="highlight-box">
+    <p><strong>Мануфактура</strong> — топовый интегратор amoCRM для компаний с отделами продаж от 1 человека. Настраиваем систему, чтобы лиды не терялись, а продажи росли 📈</p>
+  </div>
+  <div class="step-list">
+    <div class="step-item">
+      <div class="step-circle">🧑</div>
+      <div class="step-content"><h4>История основателя</h4><p>Сам дорос до своего бизнеса в продажах. Помогал компаниям строить отделы — видел, как это меняет дело. Открыл Мануфактуру, чтобы налаживать процессы и поднимать выручку для других компаний в большем масштабе.</p></div>
+    </div>
+    <div class="step-item">
+      <div class="step-circle">🤝</div>
+      <div class="step-content"><h4>Ваша роль как партнёра</h4><p>Вы тратите время только на <strong>поиск клиента</strong> — остальное берёт Мануфактура. Мы звоним, продаём, настраиваем amoCRM под ключ и обеспечиваем поддержку. Вы получаете пассивный доход 🚀</p></div>
+    </div>
+  </div>
+  <h3 style="font-size:13px;font-weight:800;margin-bottom:11px">💰 Пример заработка</h3>
+  <div class="money-grid">
+    <div class="money-card"><div class="mc-label">Чек клиента</div><div class="mc-value">40–120 тыс.</div><div class="mc-sub">рублей за внедрение amoCRM</div></div>
+    <div class="money-card"><div class="mc-label">Ваша доля</div><div class="mc-value">8–24 тыс.</div><div class="mc-sub">пассивно — без встреч и доработок</div></div>
+    <div class="money-card"><div class="mc-label">2–3 клиента</div><div class="mc-value">~50 тыс.</div><div class="mc-sub">пассивно в кармане 🔥</div></div>
+  </div>
+  <div class="highlight-box green">
+    <p><strong>Почему это работает?</strong> Компании с amoCRM увеличивают продажи на 30–50% в первые месяцы. Если клиент растёт — ваш чек растёт с ним 📈 Ни риска, ни вложений — только профит 😎</p>
+  </div>
+  <h3 style="font-size:14px;font-weight:800;margin-bottom:12px">📱 Подпишитесь на наши соцсети — там ещё больше кейсов!</h3>
+  <p style="font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.6">Мы регулярно публикуем реальные истории клиентов, разборы внедрений и полезные советы по продажам. <strong>Обязательно подпишитесь</strong> 👇</p>
+  <div class="social-links">
+    <a class="social-btn btn-tg" href="https://t.me/manufateam" target="_blank">✈️ Telegram-канал</a>
+    <a class="social-btn btn-max" href="https://max.ru/id616270571979_biz" target="_blank">🟠 Max канал</a>
+    <a class="social-btn btn-ig" href="https://instagram.com/manufateam" target="_blank">📸 Instagram</a>
+    <a class="social-btn btn-vk" href="https://vk.com/manufateam" target="_blank">🔵 ВКонтакте</a>
+  </div>
+  <div class="btn-row">
+    <button class="btn btn-prev" onclick="goTo(1)">← Назад</button>
+    <button class="btn btn-next" onclick="completeAndNext()">Далее →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- SLIDE 3: Что такое AmoCRM -->
+<!-- ══════════════════════════════════════════ -->
+<div class="slide" id="slide-3">
+  <div class="slide-header">
+    <div class="slide-num">03</div>
+    <div class="slide-title-block"><h2>Что такое <span>AmoCRM</span></h2><div class="slide-subtitle">Инструмент, который меняет продажи</div></div>
+  </div>
+  <div class="highlight-box">
+    <p><strong>AmoCRM</strong> — облачная CRM-система для управления продажами. Собирает все заявки в одном месте, автоматизирует рутину и даёт руководителю реальную картину бизнеса.</p>
+  </div>
+  <h3 style="font-size:14px;font-weight:800;margin-bottom:11px">🔥 Что делает AmoCRM: упрощает жизнь продажникам</h3>
+  <div class="feature-list">
+    <div class="feature-item"><div class="feature-icon">💬</div><div><strong>Сохраняет все взаимодействия:</strong> входящие и исходящие из разных каналов — звонки, чаты, email. Общайтесь с клиентами прямо в CRM, без переключения между приложениями!</div></div>
+    <div class="feature-item"><div class="feature-icon">📈</div><div><strong>Визуализирует воронку:</strong> видите этапы сделок, ответственного менеджера и канал лида на одном экране.</div></div>
+    <div class="feature-item"><div class="feature-icon">🗓️</div><div><strong>Календарь задач:</strong> менеджер всегда знает свою загрузку, ничего не забудет и не упустит клиента.</div></div>
+    <div class="feature-item"><div class="feature-icon">⚙️</div><div><strong>Автоматический мониторинг:</strong> отслеживает просрочки, распределяет новые задачи между командой без участия руководителя.</div></div>
+    <div class="feature-item"><div class="feature-icon">📋</div><div><strong>Аналитика на высоте:</strong> число сделок по менеджерам, % выполнения плана, учёт звонков — всё для роста KPI!</div></div>
+  </div>
+  <div class="highlight-box green"><p>В итоге — <strong>продажи ускоряются</strong>, а команда фокусируется на клиентах, а не на бумажках 👍</p></div>
+  <h3 style="font-size:14px;font-weight:800;margin:16px 0 11px">✨ Основные функции и мобильная магия</h3>
+  <div class="card-grid">
+    <div class="card"><div class="card-icon">🔍</div><h3>Учёт клиентов и сделок</h3><p>Анализ в любом разрезе: по менеджерам, нишам, источникам и периодам.</p></div>
+    <div class="card"><div class="card-icon">📊</div><h3>Воронка продаж</h3><p>Создание и аналитика — видно где сделки зависают и почему.</p></div>
+    <div class="card"><div class="card-icon">✏️</div><h3>Конструктор каталогов</h3><p>Списки с тегами, фильтрами и редактированием — как Lego 🧱</p></div>
+    <div class="card"><div class="card-icon">🤖</div><h3>Sales Bot</h3><p>Бот сам ведёт переписку с клиентами — первый контакт без менеджера!</p></div>
+    <div class="card"><div class="card-icon">🔔</div><h3>Лента событий</h3><p>Все действия по сделкам в хронологии — контекст всегда под рукой.</p></div>
+    <div class="card"><div class="card-icon">📦</div><h3>Интеграция 1С</h3><p>Менеджеры видят всю учётку компании в одном месте.</p></div>
+  </div>
+  <div class="highlight-box orange"><p>😲 Пользователи могут дорабатывать функционал — добавлять блоки и вкладки по своим потребностям. AmoCRM — <strong>must-have для продажников и предпринимателей!</strong></p></div>
+  <div class="btn-row">
+    <button class="btn btn-prev" onclick="goTo(2)">← Назад</button>
+    <button class="btn btn-next" onclick="completeAndNext()">Далее →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- SLIDE 4: Боли без CRM -->
+<!-- ══════════════════════════════════════════ -->
+<div class="slide" id="slide-4">
+  <div class="slide-header">
+    <div class="slide-num">04</div>
+    <div class="slide-title-block"><h2>Боли <span>без CRM</span></h2><div class="slide-subtitle">Где бизнес теряет деньги — незаметно и ежедневно</div></div>
+  </div>
+  <div class="highlight-box orange"><p>Главная проблема — <strong>деньги теряются незаметно</strong>. Нет единой системы, нет контроля за менеджерами, нет прозрачной воронки. Руководитель думает «всё более-менее» — пока рост не упирается в потолок.</p></div>
+  <div class="pain-card">
+    <div class="pain-header"><div class="pain-num">1</div><h3>Потеря заявок и клиентов</h3></div>
+    <div class="pain-body">
+      <div class="pain-col"><strong>Как выглядит:</strong>Заявки приходят в WhatsApp, Telegram, Instagram, почту. Часть лидов «теряется». Клиенты жалуются: «Мы вам писали, но ответа не было».</div>
+      <div class="pain-col"><strong>Клиент говорит:</strong><em>«Наверное, менеджер не увидел»</em><br><em>«Клиенты иногда пропадают»</em><br><br>Нет единой точки сбора. Нет автозадач. Нет ответственности.</div>
+    </div>
+  </div>
+  <div class="pain-card">
+    <div class="pain-header"><div class="pain-num">2</div><h3>Хаос в коммуникациях</h3></div>
+    <div class="pain-body">
+      <div class="pain-col"><strong>Как выглядит:</strong>Один клиент пишет трём менеджерам. История в личных мессенджерах. При увольнении менеджера — клиенты пропадают.</div>
+      <div class="pain-col"><strong>Глубинная боль:</strong>Бизнес не владеет своими клиентами. Все контакты — в личных аккаунтах сотрудников.</div>
+    </div>
+  </div>
+  <div class="pain-card">
+    <div class="pain-header"><div class="pain-num">3</div><h3>Отсутствие контроля продаж</h3></div>
+    <div class="pain-body">
+      <div class="pain-col"><strong>Типичная ситуация:</strong>Руководитель не видит реальную воронку. Отчёты — «на словах» или в Excel. Непонятно, почему нет роста.</div>
+      <div class="pain-col"><strong>Клиент говорит:</strong><em>«Менеджеры говорят, что работают, но денег больше не становится»</em></div>
+    </div>
+  </div>
+  <div class="pain-card">
+    <div class="pain-header"><div class="pain-num">4</div><h3>Менеджеры не дожимают клиентов</h3></div>
+    <div class="pain-body">
+      <div class="pain-col"><strong>Без CRM:</strong>Нет напоминаний о повторных касаниях. Нет стандартов обработки. Каждый продаёт «как умеет».</div>
+      <div class="pain-col"><strong>Вопрос, вскрывающий боль:</strong><em>«Через сколько минут после заявки менеджер связывается с клиентом?»</em></div>
+    </div>
+  </div>
+  <div class="pain-card">
+    <div class="pain-header"><div class="pain-num">5</div><h3>Бизнес не готов к росту</h3></div>
+    <div class="pain-body">
+      <div class="pain-col"><strong>Когда проявляется:</strong>Увеличивается реклама → больше заявок → хаос. Новых менеджеров сложно обучать. Всё на ручном управлении.</div>
+      <div class="pain-col"><strong>Ключевая боль:</strong>Масштабирование = стресс и потери. Без системы — это потолок.</div>
+    </div>
+  </div>
+  <div class="btn-row">
+    <button class="btn btn-prev" onclick="goTo(3)">← Назад</button>
+    <button class="btn btn-next" onclick="completeAndNext()">Далее →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- SLIDE 5: Выявление болей -->
+<!-- ══════════════════════════════════════════ -->
+<div class="slide" id="slide-5">
+  <div class="slide-header">
+    <div class="slide-num">05</div>
+    <div class="slide-title-block"><h2>Выявление <span>болей</span></h2><div class="slide-subtitle">Вы — диагност бизнеса, а не продавец CRM</div></div>
+  </div>
+  <div class="highlight-box"><p>Клиенты <strong>редко приходят с запросом «внедрить amoCRM»</strong>. Они приходят с болью: «Мало продаж», «Менеджеры плохо работают», «Реклама не окупается». Ваша задача — перевести эту боль в причину.</p></div>
+  <h3 style="font-size:13px;font-weight:800;margin-bottom:11px">Начинайте не с системы, а с процесса</h3>
+  <div class="two-col">
+    <div class="two-col-box box-red"><div class="box-label">❌ НОВИЧОК</div><p style="font-style:italic;color:#1e293b">«У вас есть CRM?»</p></div>
+    <div class="two-col-box box-green"><div class="box-label">✅ ПРОФЕССИОНАЛ</div><p style="font-style:italic;color:#1e293b">«А как сейчас обрабатываются заявки?»</p></div>
+  </div>
+  <div class="q-block">
+    <h4>📥 Приём и фиксация заявок</h4>
+    <div class="q-item"><div class="q-dot"></div><div>Откуда приходят заявки? Где они фиксируются? Все ли доходят до менеджеров?<br><span class="q-signal">🚩 «В основном в WhatsApp» / «Иногда теряются» / «Менеджеры сами записывают»</span></div></div>
+  </div>
+  <div class="q-block">
+    <h4>⚡ Скорость и качество обработки</h4>
+    <div class="q-item"><div class="q-dot"></div><div>Через сколько времени менеджер связывается с клиентом? Есть ли правило по скорости ответа? Кто следит?<br><span class="q-signal">🚩 «По ситуации» / «Когда увидят» / «Мы доверяем менеджерам»</span></div></div>
+  </div>
+  <div class="q-block">
+    <h4>📊 Контроль и воронка</h4>
+    <div class="q-item"><div class="q-dot"></div><div>Видите все сделки на одном экране? Понимаете, где клиенты отваливаются? Есть цифры по каждому менеджеру?<br><span class="q-signal">🚩 «Примерно понимаем» / «В Excel» / «Сводим вручную»</span></div></div>
+  </div>
+  <div class="q-block">
+    <h4>🔄 Повторные касания и дожим</h4>
+    <div class="q-item"><div class="q-dot"></div><div>Кто напоминает менеджеру перезвонить? Есть система повторных касаний? Что происходит, если клиент «пошёл думать»?<br><span class="q-signal">🚩 «Надеемся на менеджера» / «Если сам напишет» / «По настроению»</span></div></div>
+  </div>
+  <div class="q-block">
+    <h4>👤 Зависимость от людей</h4>
+    <div class="q-item"><div class="q-dot"></div><div>Что будет, если менеджер уйдёт? Где хранится история общения? Новый сотрудник быстро включится?<br><span class="q-signal">🚩 «Ну… будет сложно» / «В переписках» / «Долго обучаем»</span></div></div>
+  </div>
+  <div class="highlight-box green">
+    <p>🟢 <strong>Боль найдена, если клиент:</strong> начинает оправдываться, делает паузы, говорит «Да, у нас так».<br><br>
+    <strong>Зафиксируйте:</strong> «Если подытожить: заявки приходят из разных каналов, часть теряется, а вы не видите реальную воронку. Всё верно?» — когда соглашается — боль признана. ✅</p>
+  </div>
+  <div class="highlight-box">
+    <p>✅ <strong>Переход к amoCRM (мягко):</strong> «В таких ситуациях компании обычно внедряют систему, которая собирает заявки, контролирует менеджеров и показывает воронку» — если готов, он сам спросит: <strong>«А что это за система?»</strong></p>
+  </div>
+  <div class="btn-row">
+    <button class="btn btn-prev" onclick="goTo(4)">← Назад</button>
+    <button class="btn btn-next" onclick="completeAndNext()">Далее →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- SLIDE 6: Клиенты -->
+<!-- ══════════════════════════════════════════ -->
+<div class="slide" id="slide-6">
+  <div class="slide-header">
+    <div class="slide-num">06</div>
+    <div class="slide-title-block"><h2><span>Клиенты</span></h2><div class="slide-subtitle">Кто наш целевой клиент — и есть ли такие в вашем окружении?</div></div>
+  </div>
+  <div class="highlight-box">
+    <p>Наш идеальный клиент — <strong>малый и средний бизнес</strong> с отделом продаж от 2 человек, который уже «чувствует боль» от беспорядка в заявках и хочет системности.</p>
+  </div>
+
+  <div class="niche-grid" id="nicheGrid">
+    <div class="niche-card" onclick="toggleNiche(this)">
+      <label><input type="checkbox" onchange="checkNiches()"><div style="display:flex;flex-direction:column;gap:4px"><span class="niche-icon">🏗️</span><span class="niche-name">Строительство и ремонт</span></div></label>
+      <p style="font-size:11px;color:var(--muted);line-height:1.5">Много заявок, долгий цикл сделки — CRM незаменима.</p>
+    </div>
+    <div class="niche-card" onclick="toggleNiche(this)">
+      <label><input type="checkbox" onchange="checkNiches()"><div style="display:flex;flex-direction:column;gap:4px"><span class="niche-icon">🎓</span><span class="niche-name">Онлайн-образование</span></div></label>
+      <p style="font-size:11px;color:var(--muted);line-height:1.5">Курсы, школы — нужна автоматизация и воронка продаж.</p>
+    </div>
+    <div class="niche-card" onclick="toggleNiche(this)">
+      <label><input type="checkbox" onchange="checkNiches()"><div style="display:flex;flex-direction:column;gap:4px"><span class="niche-icon">🏥</span><span class="niche-name">Медицина и услуги</span></div></label>
+      <p style="font-size:11px;color:var(--muted);line-height:1.5">Запись, напоминания, повторные визиты — всё в CRM.</p>
+    </div>
+    <div class="niche-card" onclick="toggleNiche(this)">
+      <label><input type="checkbox" onchange="checkNiches()"><div style="display:flex;flex-direction:column;gap:4px"><span class="niche-icon">🛒</span><span class="niche-name">Торговля и e-com</span></div></label>
+      <p style="font-size:11px;color:var(--muted);line-height:1.5">Обработка заказов, возвраты, лояльность — CRM решает.</p>
+    </div>
+    <div class="niche-card" onclick="toggleNiche(this)">
+      <label><input type="checkbox" onchange="checkNiches()"><div style="display:flex;flex-direction:column;gap:4px"><span class="niche-icon">🏠</span><span class="niche-name">Недвижимость</span></div></label>
+      <p style="font-size:11px;color:var(--muted);line-height:1.5">Длинный цикл, много касаний — без CRM сделки теряются.</p>
+    </div>
+    <div class="niche-card" onclick="toggleNiche(this)">
+      <label><input type="checkbox" onchange="checkNiches()"><div style="display:flex;flex-direction:column;gap:4px"><span class="niche-icon">🚗</span><span class="niche-name">Авто и сервисы</span></div></label>
+      <p style="font-size:11px;color:var(--muted);line-height:1.5">Запись, повторные обращения, сервисные напоминания.</p>
+    </div>
+    <div class="niche-card" onclick="toggleNiche(this)">
+      <label><input type="checkbox" onchange="checkNiches()"><div style="display:flex;flex-direction:column;gap:4px"><span class="niche-icon">⚖️</span><span class="niche-name">Юридические услуги</span></div></label>
+      <p style="font-size:11px;color:var(--muted);line-height:1.5">Консультации, лиды, контроль дел — CRM помогает.</p>
+    </div>
+    <div class="niche-card" onclick="toggleNiche(this)">
+      <label><input type="checkbox" onchange="checkNiches()"><div style="display:flex;flex-direction:column;gap:4px"><span class="niche-icon">💄</span><span class="niche-name">Красота и фитнес</span></div></label>
+      <p style="font-size:11px;color:var(--muted);line-height:1.5">Запись клиентов, возвраты, повторные визиты.</p>
+    </div>
+    <div class="niche-card" onclick="toggleNiche(this)">
+      <label><input type="checkbox" onchange="checkNiches()"><div style="display:flex;flex-direction:column;gap:4px"><span class="niche-icon">📦</span><span class="niche-name">Производство и опт</span></div></label>
+      <p style="font-size:11px;color:var(--muted);line-height:1.5">Работа с B2B клиентами, длинные циклы сделок.</p>
+    </div>
+    <div class="niche-card" onclick="toggleNiche(this)">
+      <label><input type="checkbox" onchange="checkNiches()"><div style="display:flex;flex-direction:column;gap:4px"><span class="niche-icon">🚫</span><span class="niche-name">Нет знакомых в этих нишах</span></div></label>
+      <p style="font-size:11px;color:var(--muted);line-height:1.5">Ничего страшного — мы покажем, как найти первых клиентов.</p>
+    </div>
+  </div>
+  <div class="niche-result" id="nicheResult"></div>
+  <div class="btn-row">
+    <button class="btn btn-prev" onclick="goTo(5)">← Назад</button>
+    <button class="btn btn-next" id="clientsNextBtn" onclick="completeAndNext()">Далее →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- SLIDE 7: Кейсы -->
+<!-- ══════════════════════════════════════════ -->
+<div class="slide" id="slide-7">
+  <div class="slide-header">
+    <div class="slide-num">07</div>
+    <div class="slide-title-block"><h2><span>Кейсы</span></h2><div class="slide-subtitle">Реальные результаты наших клиентов</div></div>
+  </div>
+  <div class="highlight-box green"><p>Ниже — реальные примеры того, как amoCRM изменила бизнес наших клиентов. Больше кейсов и живых видео — в наших соцсетях 👇</p></div>
+
+  <div class="case-grid">
+    <div class="case-card"><div class="case-tag">Строительство</div><h4>Строительная компания</h4><p>До внедрения: заявки терялись в мессенджерах, менеджеры работали «по памяти».</p><div class="case-result">📈 +40% к выручке за 3 месяца</div></div>
+    <div class="case-card"><div class="case-tag">Образование</div><h4>Онлайн-школа</h4><p>До внедрения: хаос в обработке заявок на курсы, низкая доходимость до сделки.</p><div class="case-result">📈 +27% к выручке за первый месяц</div></div>
+    <div class="case-card"><div class="case-tag">Медицина</div><h4>Медицинский центр</h4><p>До внедрения: пациенты не возвращались, не было системы повторных касаний.</p><div class="case-result">📈 +35% повторных обращений</div></div>
+    <div class="case-card"><div class="case-tag">Недвижимость</div><h4>Агентство недвижимости</h4><p>До внедрения: агенты вели клиентов в личных телефонах, при уходе — потери.</p><div class="case-result">📈 Конверсия в сделку выросла ×2</div></div>
+  </div>
+
+  <div class="highlight-box purple">
+    <p>💡 <strong>Совет:</strong> когда будете разговаривать с потенциальным клиентом — покажите ему кейс из его ниши. Это работает лучше любой презентации. Сохраните ссылки на канал себе!</p>
+  </div>
+
+  <!-- QUIZ для кейсов -->
+  <div style="background:var(--surface2);border:1.5px solid var(--border);border-radius:14px;padding:20px;margin-bottom:16px;">
+    <h3 style="font-size:14px;font-weight:800;margin-bottom:4px;color:var(--text)">🎯 Проверка: убедись, что ознакомился с кейсами</h3>
+    <p style="font-size:12.5px;color:var(--muted);margin-bottom:12px">Ответь на два вопроса, чтобы пройти дальше</p>
+    <div style="background:var(--orange-light);border:1.5px solid rgba(249,115,22,0.3);border-radius:10px;padding:12px 14px;margin-bottom:14px;font-size:13px;color:var(--text);line-height:1.65;">
+      ⚠️ Если ты ещё не подписался на наши соцсети — сделай это прямо сейчас! Ответы на вопросы ниже ты найдёшь там 👇<br>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;">
+        <a class="social-btn btn-tg" href="https://t.me/manufateam" target="_blank" style="font-size:12px;padding:7px 13px;">✈️ Telegram</a>
+        <a class="social-btn btn-max" href="https://max.ru/id616270571979_biz" target="_blank" style="font-size:12px;padding:7px 13px;">🟠 Max</a>
+        <a class="social-btn btn-ig" href="https://instagram.com/manufateam" target="_blank" style="font-size:12px;padding:7px 13px;">📸 Instagram</a>
+        <a class="social-btn btn-vk" href="https://vk.com/manufateam" target="_blank" style="font-size:12px;padding:7px 13px;">🔵 ВКонтакте</a>
+      </div>
+    </div>
+
+    <div class="quiz-block" id="q1block">
+      <h4>Вопрос 1. На сколько процентов к выручке прибавила онлайн-школа? <span style="font-size:12px;font-weight:400;color:var(--muted)">(введи цифру)</span></h4>
+      <input class="quiz-input" id="q1input" type="text" placeholder="Введи ответ..." oninput="checkQ1()">
+      <div class="quiz-feedback" id="q1feedback"></div>
+    </div>
+
+    <div class="quiz-block" id="q2block" style="display:none">
+      <h4>Вопрос 2. Какое первое слово в клипе ВК «Парадокс современности»? <span style="font-size:12px;font-weight:400;color:var(--muted)">(напиши текстом)</span></h4>
+      <input class="quiz-input" id="q2input" type="text" placeholder="Введи ответ..." oninput="checkQ2()">
+      <div class="quiz-feedback" id="q2feedback"></div>
+    </div>
+
+    <div id="quizDone" style="display:none;background:var(--done-light);border:1.5px solid rgba(22,163,74,0.4);border-radius:10px;padding:12px;font-size:13px;color:var(--done);font-weight:700;margin-top:10px;">
+      ✅ Отлично! Оба ответа верны — можешь идти дальше!
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-prev" onclick="goTo(6)">← Назад</button>
+    <button class="btn btn-next" id="casesNextBtn" onclick="completeAndNext()" disabled>Далее →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- SLIDE 8: Как передавать клиентов -->
+<!-- ══════════════════════════════════════════ -->
+<div class="slide" id="slide-8">
+  <div class="slide-header">
+    <div class="slide-num">08</div>
+    <div class="slide-title-block"><h2>Как <span>передавать</span> клиентов</h2><div class="slide-subtitle">Процесс, требования и что вы получаете как партнёр</div></div>
+  </div>
+
+  <div class="transfer-box">
+    <h3>🖇️ Ключевые правила при передаче</h3>
+    <ul>
+      <li><strong>Информируйте клиента заранее.</strong> Перед тем как отправить контакт через партнёрскую ссылку, обязательно получите согласие клиента. Убедитесь, что он осведомлён о передаче данных для консультации. Прозрачность — залог доверия.</li>
+      <li><strong>Целевые компании.</strong> Мы отдаём предпочтение компаниям с отделами продаж от 3 сотрудников и более. Также приветствуются те, кто планирует расширение в ближайшее время — это обеспечивает лучшую синергию с нашими решениями.</li>
+    </ul>
+  </div>
+
+  <h3 style="font-size:13px;font-weight:800;margin-bottom:11px">🔗 Что вы получаете как партнёр</h3>
+  <div class="partner-get">
+    <div class="pg-card"><div class="pg-icon">🔗</div><h4>Индивидуальная ссылка</h4><p>Уникальная партнёрская ссылка фиксирует все ваши рекомендации и позволяет отслеживать переданные контакты.</p></div>
+    <div class="pg-card"><div class="pg-icon">📑</div><h4>Детальный отчёт</h4><p>Еженедельно — отчёт по всем вашим клиентам: статус обработки, результаты контактов, текущий этап по каждому лиду.</p></div>
+    <div class="pg-card"><div class="pg-icon">💴</div><h4>Ваш процент</h4><p>Вы получаете свой процент после завершения сделки. Автоматически, без дополнительных договорённостей.</p></div>
+  </div>
+
+  <div class="highlight-box orange">
+    <p style="margin-bottom:14px">📸 <strong>Пришли мне скриншот</strong>, что ты дошёл до этого места — и запроси партнёрскую ссылку для передачи клиентов. После этого получишь секретный код для доступа к источникам поиска клиентов (следующий модуль).</p>
+    <div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center">
+      <a href="https://t.me/ihipoo" target="_blank" style="display:inline-flex;align-items:center;gap:7px;background:#0088cc;color:#fff;font-size:13px;font-weight:700;padding:11px 20px;border-radius:10px;text-decoration:none;box-shadow:0 3px 10px rgba(0,136,204,0.3)">✈️ Написать в Telegram</a>
+      <a href="https://max.ru/u/f9LHodD0cOLSeMFQVOm0DUAO3PEVuXXSpLeX2RWYOZMfobtbqisJrog7WvM" target="_blank" style="display:inline-flex;align-items:center;gap:7px;background:#ff6b00;color:#fff;font-size:13px;font-weight:700;padding:11px 20px;border-radius:10px;text-decoration:none;box-shadow:0 3px 10px rgba(255,107,0,0.3)">🟠 Написать в Max</a>
+    </div>
+  </div>
+
+  <!-- КОД ДОСТУПА -->
+  <div class="code-block">
+    <h3>🔐 Введите код доступа</h3>
+    <p>Получите код у @ihipoo в Telegram и введите его здесь, чтобы открыть последний модуль</p>
+    <div class="code-input-row">
+      <input class="code-input" id="codeInput" type="text" placeholder="Введите код...">
+      <button class="code-btn" onclick="checkCode()">Проверить</button>
+    </div>
+    <div class="code-feedback" id="codeFeedback"></div>
+    <div class="code-success" id="codeSuccess">
+      <div class="completion-badge">🎉 Код верный! Последний модуль открыт!</div>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-prev" onclick="goTo(7)">← Назад</button>
+    <button class="btn btn-next" id="transferNextBtn" onclick="completeAndNext()" disabled>Далее →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- SLIDE 9: Как найти новых клиентов -->
+<!-- ══════════════════════════════════════════ -->
+<div class="slide" id="slide-9">
+  <div class="slide-header">
+    <div class="slide-num">09</div>
+    <div class="slide-title-block"><h2>Как найти <span>новых клиентов</span></h2><div class="slide-subtitle">5 рабочих каналов привлечения — изучите каждый</div></div>
+  </div>
+  <div class="sub-note" id="subNote">👆 Нажмите на каждый канал, чтобы изучить его и перейти дальше</div>
+  <div class="sub-list">
+    <div class="sub-item" id="sub-1" onclick="openSub(1)"><div class="si-num">Канал 01</div><h4>Тёплый круг</h4><p>Друзья, родственники, бывшие коллеги — первые клиенты рядом.</p><div class="sub-check" id="subCheck-1"></div></div>
+    <div class="sub-item" id="sub-2" onclick="openSub(2)"><div class="si-num">Канал 02</div><h4>Лотерея</h4><p>Розыгрыш аудита в соцсетях — геймификация, которая привлекает сама.</p><div class="sub-check" id="subCheck-2"></div></div>
+    <div class="sub-item" id="sub-3" onclick="openSub(3)"><div class="si-num">Канал 03</div><h4>Авито</h4><p>Резюме соискателя с компетенциями по продажам — нестандартный вход.</p><div class="sub-check" id="subCheck-3"></div></div>
+    <div class="sub-item" id="sub-4" onclick="openSub(4)"><div class="si-num">Канал 04</div><h4>Нетворкинг</h4><p>Бизнес-завтраки, клубы, конференции — где предприниматели собираются сами.</p><div class="sub-check" id="subCheck-4"></div></div>
+    <div class="sub-item" id="sub-5" onclick="openSub(5)"><div class="si-num">Канал 05</div><h4>Тематические чаты</h4><p>Telegram и ВКонтакте — находим, смотрим профили, пишем по скрипту.</p><div class="sub-check" id="subCheck-5"></div></div>
+  </div>
+  <div id="completionMsg" style="display:none">
+    <div class="completion-badge" style="margin-bottom:14px">🎉 Все каналы изучены!</div>
+
+    <!-- CTA кнопка -->
+    <div style="text-align:center;margin-bottom:16px">
+      <button onclick="openActionPlan()" style="display:inline-flex;align-items:center;gap:10px;background:linear-gradient(135deg,#f97316,#ea580c);color:#fff;border:none;border-radius:14px;padding:16px 28px;font-size:15px;font-weight:800;font-family:'Manrope',sans-serif;cursor:pointer;box-shadow:0 6px 20px rgba(249,115,22,0.35);transition:all 0.2s" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+        🚀 Смотри, что будет если ты это сделаешь →
+      </button>
+    </div>
+
+    <div id="secretBlockReveal" style="display:none;background:linear-gradient(135deg,#f5f3ff,#ede9fe);border:1.5px solid #c4b5fd;border-radius:14px;padding:20px;text-align:center;">
+      <div style="font-size:28px;margin-bottom:8px">🔐</div>
+      <h3 style="font-size:15px;font-weight:800;color:#7c3aed;margin-bottom:8px">Хотите открыть секретный блок?</h3>
+      <p style="font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:14px">Впереди — <strong style="color:#7c3aed">секретная техника</strong>. Чтобы получить доступ, напишите мне в Telegram и запросите пароль:<br><br>
+      <a href="https://t.me/ihipoo" target="_blank" style="display:inline-flex;align-items:center;gap:6px;background:#0088cc;color:#fff;font-size:13px;font-weight:700;padding:9px 18px;border-radius:9px;text-decoration:none;">✈️ Написать @ihipoo</a></p>
+    </div>
+  </div>
+  <div class="btn-row">
+    <button class="btn btn-prev" onclick="goTo(8)">← Назад</button>
+    <button class="btn btn-next" id="slide9NextBtn" onclick="completeAndNext()" style="display:none">Далее →</button>
+  </div>
+</div>
+
+<!-- ══ ACTION PLAN MODAL (слайд-шоу) ══ -->
+<div id="actionPlanModal" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,0.75);z-index:300;overflow-y:auto;backdrop-filter:blur(4px)">
+  <div style="max-width:600px;margin:40px auto;padding:0 16px 60px">
+    <div style="background:var(--surface);border-radius:20px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.3)">
+      <!-- header -->
+      <div style="background:linear-gradient(135deg,#1e293b,#0f172a);padding:20px 24px;display:flex;align-items:center;justify-content:space-between">
+        <div>
+          <div style="font-size:11px;font-weight:800;letter-spacing:2px;color:#94a3b8;text-transform:uppercase;margin-bottom:4px">Твой план действий</div>
+          <div style="font-size:18px;font-weight:800;color:#fff">5 дней — первые клиенты</div>
+        </div>
+        <button onclick="closeActionPlan()" style="background:rgba(255,255,255,0.1);border:none;color:#fff;width:36px;height:36px;border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center">✕</button>
+      </div>
+      <!-- progress dots -->
+      <div style="display:flex;gap:6px;padding:16px 24px 0;justify-content:center" id="apDots"></div>
+      <!-- slide content -->
+      <div id="apSlideContent" style="padding:24px"></div>
+      <!-- nav -->
+      <div style="display:flex;gap:10px;padding:0 24px 24px;justify-content:space-between">
+        <button id="apPrevBtn" onclick="apPrev()" style="background:var(--surface);border:1.5px solid var(--border);color:var(--muted);padding:10px 22px;border-radius:10px;font-family:'Manrope',sans-serif;font-size:13px;font-weight:700;cursor:pointer">← Назад</button>
+        <button id="apNextBtn" onclick="apNext()" style="background:var(--accent);color:#fff;border:none;padding:10px 22px;border-radius:10px;font-family:'Manrope',sans-serif;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(37,99,235,0.3)">Далее →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- SLIDE 10: Секретная техника -->
+<!-- ══════════════════════════════════════════ -->
+<div class="slide" id="slide-10">
+  <div class="slide-header">
+    <div class="slide-num">10</div>
+    <div class="slide-title-block"><h2>🔐 Секретная <span>техника</span></h2><div class="slide-subtitle">Только для тех, кто прошёл полное обучение</div></div>
+  </div>
+
+  <div style="background:linear-gradient(135deg,#f5f3ff,#ede9fe);border:1.5px solid #c4b5fd;border-radius:14px;padding:22px;text-align:center;margin-bottom:18px;">
+    <div style="font-size:48px;margin-bottom:10px">🔒</div>
+    <h3 style="font-size:16px;font-weight:800;color:#7c3aed;margin-bottom:8px">Этот блок защищён паролем</h3>
+    <p style="font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:16px">Введите пароль, который вы получили от <strong style="color:#7c3aed">@ihipoo</strong> в Telegram</p>
+    <div class="code-input-row" style="max-width:360px;margin:0 auto;">
+      <input class="code-input" id="secretInput" type="password" placeholder="Введите пароль...">
+      <button class="code-btn" onclick="checkSecret()">Войти</button>
+    </div>
+    <div class="code-feedback" id="secretFeedback"></div>
+  </div>
+
+  <div id="secretContent" style="display:none">
+    <div class="completion-badge" style="margin-bottom:18px">🎉 Добро пожаловать! Обучение завершено!</div>
+    <div class="highlight-box green">
+      <p>Поздравляем! Вы прошли полное партнёрское обучение Мануфактуры. Секретный контент будет добавлен сюда.</p>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-prev" onclick="goTo(9)">← Назад</button>
+  </div>
+</div>
+
+</div><!-- /content-wrap -->
+
+<!-- ══ SUB PAGE (full screen) ══ -->
+<div id="subPage" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:200;overflow-y:auto;">
+  <div style="max-width:680px;margin:0 auto;padding:24px 24px 60px;">
+    <!-- top bar -->
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:22px;padding-bottom:14px;border-bottom:1.5px solid var(--border);">
+      <button onclick="closeSub()" style="display:flex;align-items:center;gap:6px;background:var(--surface);border:1.5px solid var(--border);color:var(--muted);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:700;font-family:'Manrope',sans-serif;box-shadow:var(--shadow);">← Назад</button>
+      <div id="subPageBreadcrumb" style="font-size:12px;color:var(--muted);">Поиск клиентов</div>
+    </div>
+    <div id="subPageContent"></div>
+    <button class="btn btn-next" style="margin-top:24px;width:100%;padding:14px;" onclick="markSubDone()">✅ Ознакомился, вернуться к каналам →</button>
+  </div>
+</div>
+
+<script>
+const TOTAL = 10;
+let current = 1;
+let completed = new Set();
+let subsDone = new Set();
+let currentSub = null;
+let q1ok = false, q2ok = false;
+
+const subData = {
+  1:{icon:'🤝',title:'Тёплый круг',content:`
+    <p style="line-height:1.7;color:var(--muted);font-size:13px;margin-bottom:12px">Начните с людей, которые вас знают и доверяют вам. Составьте список из <strong style="color:var(--accent)">20–30 человек</strong> — у кого есть бизнес или кто работает в продажах.</p>
+
+    <div style="background:#eff6ff;border:1.5px solid #bfdbfe;border-radius:10px;padding:12px 14px;margin-bottom:14px;font-size:13px;color:#1e293b;line-height:1.65">
+      <strong style="color:#2563eb;display:block;margin-bottom:4px">👤 Кто считается тёплым контактом?</strong>
+      Тёплый контакт — это тот, с кем у вас <strong>есть переписка</strong> в любом мессенджере. Не обязательно близкий друг — достаточно, что человек вас знает и узнает имя в уведомлении.
+    </div>
+
+    <div style="background:#fff7ed;border:1.5px solid rgba(249,115,22,0.35);border-radius:12px;padding:16px;margin-bottom:14px">
+      <div style="font-size:12px;font-weight:800;color:#f97316;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">💡 Лайфхак: пишите вообще всем знакомым</div>
+      <p style="font-size:13px;color:#1e293b;line-height:1.7;margin-bottom:12px">Не фильтруйте заранее — просто пройдитесь по списку контактов сверху вниз во всех мессенджерах: <strong>WhatsApp, Telegram, Instagram</strong>. Вы никогда не знаете заранее, кто именно откликнется.</p>
+      <div style="background:#fff;border-radius:10px;padding:12px 14px;border-left:3px solid #f97316;margin-bottom:12px">
+        <div style="font-size:11px;font-weight:800;color:#f97316;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:7px">📋 Готовое сообщение — просто скопируйте:</div>
+        <p style="font-size:13px;color:#1e293b;line-height:1.75;font-style:italic">«Привет! Я сейчас работаю с компанией Мануфактура — они занимаются повышением продаж в компаниях. Есть у тебя кто-то в окружении, кому это может быть интересно?»</p>
+      </div>
+      <div style="font-size:12.5px;color:#92400e;line-height:1.7">
+        Если у вашего знакомого самого бизнес или он связан с продажами — он <strong>сам откликнется</strong>. Если нет — кому-нибудь посоветует. <strong>Это запустит вашу паутину связей и рекомендаций.</strong>
+      </div>
+    </div>
+
+    <div style="background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:10px;padding:12px;font-size:12.5px;color:#1e293b;line-height:1.65;margin-bottom:12px">
+      <strong style="color:#16a34a;display:block;margin-bottom:6px">🔗 Если знакомый вообще не понимает, чем вы занимаетесь</strong>
+      Отправьте ему эту презентацию — пусть посмотрит сам. Иногда лучше один раз показать, чем долго объяснять.
+    </div>
+    <div style="background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:10px;padding:12px;font-size:12.5px;color:#1e293b;line-height:1.65;margin-bottom:12px">
+      <strong style="color:#16a34a;display:block;margin-bottom:6px">💡 Даже если скажут «нет» — это не конец</strong>
+      Если знакомые сейчас не готовы — они будут иметь вас в виду, когда появится необходимость. Это результат с отсрочкой, но он точно приходит. И сразу тоже работает — смотри кейс ниже 👇
+    </div>
+    <div style="background:#f5f3ff;border:1.5px solid #ddd6fe;border-radius:10px;padding:12px;font-size:12.5px;color:#1e293b;line-height:1.7;margin-bottom:14px">
+      <strong style="color:#7c3aed;display:block;margin-bottom:6px">⭐ Кейс: партнёр Сергей</strong>
+      Сергей написал своим знакомым — и в тот же день получил два отклика: владелец автосервиса сказал, что <em>«сам давно думал над этим»</em>, а другой знакомый сообщил, что его руководитель тоже рассматривает внедрение CRM.<br><br>
+      <strong>За первую неделю Сергей передал 2 клиентов.</strong>
+    </div>
+    <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--accent);margin-bottom:8px">📝 Примеры скриптов</div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div style="background:var(--accent-light);border-radius:10px;padding:12px;font-size:12.5px;color:var(--text);line-height:1.7;border-left:3px solid var(--accent)">
+        <strong style="font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:var(--accent)">Вариант 1 — лёгкий вход</strong><br>
+        <em>«Слушай, у тебя же есть бизнес / ты в продажах работаешь? Мне тут интересно стало — а как у вас вообще заявки обрабатываются? Всё ловите или что-то теряется?»</em>
+      </div>
+      <div style="background:var(--accent-light);border-radius:10px;padding:12px;font-size:12.5px;color:var(--text);line-height:1.7;border-left:3px solid var(--accent)">
+        <strong style="font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:var(--accent)">Вариант 2 — через личный опыт</strong><br>
+        <em>«Я сейчас плотно занимаюсь темой продаж и CRM. Смотрю на разные бизнесы — у многих одна и та же проблема: заявки есть, а деньги куда-то теряются. У тебя такое бывает?»</em>
+      </div>
+      <div style="background:var(--accent-light);border-radius:10px;padding:12px;font-size:12.5px;color:var(--text);line-height:1.7;border-left:3px solid var(--accent)">
+        <strong style="font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:var(--accent)">Вариант 3 — совет как у друга</strong><br>
+        <em>«Слушай, я тут разобрался в одной теме — как бизнесу перестать терять клиентов. Тебе актуально вообще или у вас всё ок с этим?»</em>
+      </div>
+    </div>
+  `},
+  2:{icon:'🎰',title:'Лотерея',content:`
+    <p style="line-height:1.7;color:var(--muted);font-size:13px;margin-bottom:12px">Лотерея работает потому что это <strong style="color:var(--accent)">геймификация + бесплатный подарок</strong>. Люди участвуют из любопытства, а потом по-настоящему хотят получить приз.</p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
+      <div style="background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:10px;padding:11px;font-size:12px;line-height:1.6;color:#1e293b">
+        <div style="font-weight:800;color:#16a34a;margin-bottom:5px;font-size:11px;letter-spacing:0.5px">ЧТО РАЗЫГРЫВАТЬ</div>
+        Бесплатный аудит системы продаж (30–60 мин с экспертом Мануфактуры) — это реальная ценность для любого бизнеса
+      </div>
+      <div style="background:#eff6ff;border:1.5px solid #bfdbfe;border-radius:10px;padding:11px;font-size:12px;line-height:1.6;color:#1e293b">
+        <div style="font-weight:800;color:#2563eb;margin-bottom:5px;font-size:11px;letter-spacing:0.5px">ГДЕ ВЫКЛАДЫВАТЬ</div>
+        Свои паблики и страницы → попросить знакомых выложить у себя → Stories в соцсетях
+      </div>
+    </div>
+
+    <div style="background:var(--accent-light);border-radius:10px;padding:12px;font-size:12.5px;color:var(--text);line-height:1.7;border-left:3px solid var(--accent);margin-bottom:12px">
+      <strong>Вирусная механика:</strong><br>
+      «Отметь в комментарии знакомого предпринимателя или человека из продаж — каждый отмеченный даёт +1 шанс победить. Итоги 25-го числа 🎯»
+    </div>
+
+    <div style="background:#fefce8;border:1.5px solid #fde68a;border-radius:10px;padding:11px;font-size:12px;line-height:1.65;color:#1e293b;margin-bottom:12px">
+      <strong>📋 Готовый шаблон поста:</strong><br><br>
+      <em>«Разыгрываю бесплатный разбор системы продаж вашего бизнеса. Эксперт посмотрит как обрабатываются заявки и покажет где теряются деньги.<br>
+      Чтобы участвовать — отметь знакомого предпринимателя или человека из продаж в комментарии. Итоги 25-го числа 🎯»</em>
+    </div>
+
+    <div style="background:#f5f3ff;border:1.5px solid #ddd6fe;border-radius:10px;padding:11px;font-size:12px;line-height:1.6;color:#1e293b">
+      <strong style="color:#7c3aed">📎 Пример лотереи:</strong><br><a href="https://loterypartner.netlify.app" target="_blank" style="color:#7c3aed;font-weight:700;text-decoration:underline">loterypartner.netlify.app</a> — посмотри как это выглядит для участника
+    </div>
+
+    <div style="background:linear-gradient(135deg,#fdf4ff,#f3e8ff);border:1.5px solid #d8b4fe;border-radius:12px;padding:14px;margin-top:12px">
+      <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:#7c3aed;margin-bottom:8px">⭐ Кейс: партнёр Артур</div>
+      <p style="font-size:13px;color:#1e293b;line-height:1.75">У Артура есть свой Telegram-канал на <strong>300 подписчиков</strong>. Он использует только этот способ — и стабильно приводит <strong>1–2 клиентов каждую неделю</strong>. Без холодных звонков, без Авито, без чатов. Просто лотерея на своей аудитории — и поток не останавливается.</p>
+    </div>
+  `},
+  3:{icon:'📋',title:'Авито',content:`
+    <p style="line-height:1.7;color:var(--muted);font-size:13px;margin-bottom:12px">Нестандартный подход — <strong style="color:var(--accent)">через вакансии</strong>. Вы размещаете резюме как соискатель, а в описании ненавязчиво указываете свои компетенции по продажам.</p>
+
+    <div style="background:var(--accent-light);border:1.5px solid #bfdbfe;border-radius:10px;padding:12px;font-size:12.5px;color:var(--text);line-height:1.7;border-left:3px solid var(--accent);margin-bottom:12px">
+      <strong>Какие резюме размещать:</strong><br>
+      Менеджер по продажам · Маркетолог · Помощник маркетолога<br><br>
+      <strong>Формат:</strong> онлайн, можно размещать в каждом крупном городе — охват без ограничений
+    </div>
+
+    <div style="background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:10px;padding:12px;font-size:12px;line-height:1.7;color:#1e293b;margin-bottom:12px">
+      <strong style="color:#16a34a">В блоке «Преимущества» напишите:</strong><br><br>
+      ✔ Могу помочь внедрить систему продаж, если она не настроена<br>
+      ✔ Знаю бесплатные источники привлечения трафика<br>
+      ✔ Понимаю как строится процесс продаж и могу его выстроить
+    </div>
+
+    <div style="background:#fff7ed;border:1.5px solid #fed7aa;border-radius:10px;padding:11px;font-size:12px;line-height:1.65;color:#1e293b">
+      <strong style="color:#f97316">💡 Важно:</strong> я специально не даю готовый шаблон объявления — чтобы все партнёры не размещали одинаковые тексты. Составьте своё, можно через ИИ. Так каждое объявление будет уникальным и будет работать лучше.
+    </div>
+
+    <div style="background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:1.5px solid #86efac;border-radius:12px;padding:14px;margin-top:12px">
+      <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:#16a34a;margin-bottom:8px">⭐ Кейс: партнёр Ксения</div>
+      <p style="font-size:13px;color:#1e293b;line-height:1.75">Ксения — авитолог. Она пользуется <strong>только этим одним способом</strong> и стабильно передаёт <strong>4–5 клиентов в месяц</strong>. Никаких мессенджеров, никаких чатов — только Авито. Говорит, что это её любимый инструмент именно потому, что работает на автопилоте.</p>
+    </div>
+  `},
+  4:{icon:'🌐',title:'Нетворкинг',content:`
+    <p style="line-height:1.7;color:var(--muted);font-size:13px;margin-bottom:12px">Деловые мероприятия — место где концентрация предпринимателей максимальная. Люди сами приходят за связями и решениями.</p>
+
+    <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--accent);margin-bottom:8px">📍 Где искать мероприятия</div>
+    <div style="display:flex;flex-direction:column;gap:7px;margin-bottom:14px">
+      <div style="background:var(--surface);border:1.5px solid var(--border);border-radius:9px;padding:10px 12px;font-size:12.5px;line-height:1.6;color:var(--text)">🍳 <strong>Бизнес-завтраки</strong> — BNI, «Деловая среда», локальные клубы вашего города</div>
+      <div style="background:var(--surface);border:1.5px solid var(--border);border-radius:9px;padding:10px 12px;font-size:12.5px;line-height:1.6;color:var(--text)">🎤 <strong>Конференции и форумы</strong> — по продажам, маркетингу, онлайн-образованию, вашей нише</div>
+      <div style="background:var(--surface);border:1.5px solid var(--border);border-radius:9px;padding:10px 12px;font-size:12.5px;line-height:1.6;color:var(--text)">💬 <strong>Telegram-чаты</strong> с анонсами мероприятий — «Нетворкинг [город]», «Бизнес [город]»</div>
+      <div style="background:var(--surface);border:1.5px solid var(--border);border-radius:9px;padding:10px 12px;font-size:12.5px;line-height:1.6;color:var(--text)">💻 <strong>Коворкинги</strong> — там постоянно живут предприниматели и фрилансеры</div>
+      <div style="background:var(--surface);border:1.5px solid var(--border);border-radius:9px;padding:10px 12px;font-size:12.5px;line-height:1.6;color:var(--text)">🏭 <strong>Выставки и отраслевые события</strong> — по нише вашего потенциального клиента</div>
+    </div>
+
+    <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--accent);margin-bottom:8px">🤝 Как взаимодействовать</div>
+    <div style="background:var(--accent-light);border-radius:10px;padding:12px;font-size:12.5px;color:var(--text);line-height:1.7;border-left:3px solid var(--accent);margin-bottom:10px">
+      Не продавайте с первых слов. Сначала познакомьтесь, спросите чем человек занимается, проявите интерес. Когда спросят вас — скажите коротко:<br><br>
+      <em>«Помогаю бизнесу выстроить систему продаж — чтобы заявки не терялись и менеджеры работали по стандарту»</em><br><br>
+      Если заинтересовался — задайте 1–2 вопроса про его ситуацию прямо на месте. Нет времени — обменяйтесь контактами.
+    </div>
+
+    <div style="background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:10px;padding:12px;font-size:12.5px;color:#1e293b;line-height:1.7;margin-bottom:10px">
+      <strong style="color:#16a34a;display:block;margin-bottom:5px">📩 После мероприятия — написать в тот же день:</strong>
+      <em>«Привет, это [имя], познакомились сегодня на [название]. Хотел продолжить разговор — когда удобно пообщаться?»</em>
+    </div>
+
+    <div style="background:#fefce8;border:1.5px solid #fde68a;border-radius:10px;padding:11px;font-size:12px;line-height:1.65;color:#1e293b">
+      <strong>💡 Лайфхак:</strong> даже если сам человек не клиент — спросите: <em>«А среди ваших знакомых есть предприниматели у которых хаос в продажах?»</em> Рекомендация от живого знакомого закрывается лучше любого холодного контакта.
+    </div>
+  `},
+  5:{icon:'💬',title:'Тематические чаты',content:`
+    <p style="line-height:1.7;color:var(--muted);font-size:13px;margin-bottom:12px">Находим тематические каналы в <strong style="color:var(--accent)">Telegram и ВКонтакте</strong> — по нишам: владельцы онлайн-школ, автосервисов, каналы по продажам, строительству, медицине. Таких каналов много — найдите свои.</p>
+
+    <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--accent);margin-bottom:8px">🔍 Механика поиска</div>
+    <div style="display:flex;flex-direction:column;gap:7px;margin-bottom:14px">
+      <div style="background:var(--surface);border:1.5px solid var(--border);border-radius:9px;padding:10px 12px;font-size:12.5px;line-height:1.6;color:var(--text)">1️⃣ Находим тематический канал с включёнными комментариями</div>
+      <div style="background:var(--surface);border:1.5px solid var(--border);border-radius:9px;padding:10px 12px;font-size:12.5px;line-height:1.6;color:var(--text)">2️⃣ Смотрим кто комментирует посты — активные люди уже вовлечены в тему</div>
+      <div style="background:var(--surface);border:1.5px solid var(--border);border-radius:9px;padding:10px 12px;font-size:12.5px;line-height:1.6;color:var(--text)">3️⃣ Переходим в профиль — обычно в описании написано кто человек и чем занимается</div>
+      <div style="background:var(--surface);border:1.5px solid var(--border);border-radius:9px;padding:10px 12px;font-size:12.5px;line-height:1.6;color:var(--text)">4️⃣ Если подходит — пишем личное сообщение 👇</div>
+    </div>
+
+    <div style="background:var(--accent-light);border-radius:10px;padding:12px;font-size:12.5px;color:var(--text);line-height:1.75;border-left:3px solid var(--accent);margin-bottom:10px">
+      <strong style="font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:var(--accent)">Скрипт первого сообщения:</strong><br><br>
+      <em>«Привет, можешь мне помочь?<br>
+      Я сейчас прохожу тренинг по книге "Психология влияния" и у меня задание — помочь 10 предпринимателям.<br>
+      Твоя помощь будет заключаться в том, что ты позволишь мне тебе помочь.<br>
+      Если ок — задам несколько вопросов?»</em>
+    </div>
+
+    <div style="background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:10px;padding:12px;font-size:12.5px;color:#1e293b;line-height:1.7;margin-bottom:10px">
+      <strong style="color:#16a34a;display:block;margin-bottom:6px">✅ Если говорит «да» — задаём вопросы:</strong>
+      • Что за бизнес?<br>
+      • Как сейчас фиксируете заявки?<br>
+      • Как контролируете работу с новыми клиентами, кто отслеживает?<br>
+      • Как работаете с действующей базой?<br><br>
+      <strong>Если есть хотя бы 2 потребности — говорим:</strong><br>
+      <em>«Слушай, я знаю компанию которая как раз это закрывает. Если интересно — передам контакты, там уже сами договоритесь»</em>
+    </div>
+
+    <div style="background:#fefce8;border:1.5px solid #fde68a;border-radius:10px;padding:11px;font-size:12px;line-height:1.65;color:#1e293b;margin-bottom:10px">
+      <strong>🎰 Если говорит «нет» или не отвечает:</strong> отправьте лотерею. Иногда любопытство делает своё дело — человек участвует ради интереса, а потом сам хочет получить приз.
+    </div>
+
+    <div style="background:#fef2f2;border:1.5px solid #fecaca;border-radius:10px;padding:12px;font-size:12.5px;color:#1e293b;line-height:1.7">
+      <strong style="color:#dc2626;display:block;margin-bottom:7px">❗❗ ВАЖНО — лимиты Telegram</strong>
+      Через этот метод нельзя отправлять больше <strong>15 сообщений в сутки</strong> — это жёсткое ограничение. Технический лимит 20, но лучше перестраховаться.<br><br>
+      <strong>Если открываете новый аккаунт — прогревайте постепенно:</strong><br>
+      📅 Дни 1–7: не более <strong>1 сообщения</strong> в день<br>
+      📅 Дни 8–14: не более <strong>5 сообщений</strong> в день<br>
+      📅 Дни 15–21: не более <strong>10 сообщений</strong> в день<br>
+      📅 После 21 дня: до <strong>15 сообщений</strong> в день<br><br>
+      Не торопитесь — заблокированный аккаунт сбросит весь прогресс.
+    </div>
+
+    <div style="background:linear-gradient(135deg,#eff6ff,#dbeafe);border:1.5px solid #93c5fd;border-radius:12px;padding:14px;margin-top:12px">
+      <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:#2563eb;margin-bottom:8px">⭐ Кейс: партнёр Алина</div>
+      <p style="font-size:13px;color:#1e293b;line-height:1.75">В апреле Алина передала через этот канал <strong>10 клиентов</strong>, из которых <strong>6 купили</strong>. В прошлом месяце ей перевели <strong style="color:#2563eb;font-size:15px">80 000 ₽</strong>.</p>
+    </div>
+  `}
+};
+
+const navItems = [
+  {label:'Оглавление'},
+  {label:'О нас'},
+  {label:'Что такое AmoCRM'},
+  {label:'Боли без CRM'},
+  {label:'Выявление болей'},
+  {label:'Клиенты'},
+  {label:'Кейсы'},
+  {label:'Передача клиентов'},
+  {label:'Поиск клиентов'},
+  {label:'🔐 Секрет'}
+];
+
+function buildNav(){
+  const grid = document.getElementById('navGrid');
+  grid.innerHTML = '';
+  navItems.forEach((item, i) => {
+    const idx = i + 1;
+    const isDone = completed.has(idx);
+    const isActive = idx === current;
+    const isLocked = idx > 1 && !completed.has(idx - 1) && idx !== current;
+    let cls = 'nav-item';
+    if(isActive) cls += ' active';
+    else if(isDone) cls += ' done';
+    else if(isLocked) cls += ' locked';
+    const icon = isLocked ? '🔒' : (isDone ? '✓' : '');
+    const iconStyle = isDone ? 'color:var(--done);font-weight:800;' : 'opacity:0.5;';
+    grid.innerHTML += `<div class="${cls}" onclick="navClick(${idx})"><div class="nav-num">${idx}</div><div class="nav-label">${item.label}</div>${icon ? `<span class="nav-lock" style="${iconStyle}">${icon}</span>` : ''}</div>`;
+  });
+}
+
+function updateProgress(){
+  const done = completed.size;
+  const pct = Math.round((done / TOTAL) * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressText').textContent = `${done} из ${TOTAL} пройдено`;
+}
+
+function navClick(idx){
+  if(idx === current) return;
+  if(idx > 1 && !completed.has(idx - 1)) return;
+  if(idx > current && !completed.has(current)) return;
+  goTo(idx);
+}
+
+function goTo(idx){
+  document.getElementById('slide-' + current).classList.remove('active');
+  current = idx;
+  document.getElementById('slide-' + current).classList.add('active');
+  buildNav();
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+function completeAndNext(){
+  completed.add(current);
+  updateProgress();
+  if(current < TOTAL) goTo(current + 1);
+  buildNav();
+}
+
+// CLIENTS NICHE
+function toggleNiche(card){
+  const cb = card.querySelector('input[type=checkbox]');
+  cb.checked = !cb.checked;
+  card.classList.toggle('selected', cb.checked);
+  checkNiches();
+}
+function checkNiches(){
+  const checked = document.querySelectorAll('#nicheGrid input:checked');
+  const result = document.getElementById('nicheResult');
+  if(checked.length === 0){ result.style.display='none'; return; }
+  const noFriends = [...checked].some(cb => cb.closest('.niche-card').querySelector('.niche-name').textContent.includes('Нет знакомых'));
+  if(noFriends){
+    result.innerHTML = '💪 Не переживайте! В следующих модулях мы покажем, как найти клиентов даже с нуля — через Авито, Telegram-чаты, нетворк и другие каналы.';
+  } else {
+    const names = [...checked].map(cb => cb.closest('.niche-card').querySelector('.niche-name').textContent).join(', ');
+    result.innerHTML = `✅ Отлично! Вы отметили: <strong>${names}</strong>.<br><br>Это ваши первые потенциальные клиенты. Помните: когда будете с ними разговаривать — начните не с CRM, а с вопроса «Как сейчас обрабатываются ваши заявки?» 🎯`;
+  }
+  result.style.display = 'block';
+}
+
+// QUIZ (slide 7)
+function checkQ1(){
+  const val = document.getElementById('q1input').value.trim().replace('%','').trim();
+  const fb = document.getElementById('q1feedback');
+  if(val === '27'){
+    fb.className = 'quiz-feedback ok';
+    fb.textContent = '✅ Верно! +27% к выручке за первый месяц.';
+    q1ok = true;
+    setTimeout(() => {
+      document.getElementById('q2block').style.display = 'block';
+    }, 600);
+    tryUnlockCases();
+  } else if(val.length > 0){
+    fb.className = 'quiz-feedback err';
+    fb.textContent = '❌ Неверно. Посмотри внимательно на кейс онлайн-школы выше.';
+    q1ok = false;
+    tryUnlockCases();
+  } else {
+    fb.className = 'quiz-feedback';
+    fb.style.display = 'none';
+  }
+}
+
+function checkQ2(){
+  const val = document.getElementById('q2input').value.trim().toLowerCase();
+  const fb = document.getElementById('q2feedback');
+  if(val === 'смотри'){
+    fb.className = 'quiz-feedback ok';
+    fb.textContent = '✅ Верно! Первое слово — «Смотри».';
+    q2ok = true;
+    tryUnlockCases();
+  } else if(val.length > 0){
+    fb.className = 'quiz-feedback err';
+    fb.textContent = '❌ Неверно. Посмотри рилс в нашем Instagram внимательнее.';
+    q2ok = false;
+    tryUnlockCases();
+  } else {
+    fb.className = 'quiz-feedback';
+    fb.style.display = 'none';
+  }
+}
+
+function tryUnlockCases(){
+  if(q1ok && q2ok){
+    document.getElementById('quizDone').style.display = 'block';
+    document.getElementById('casesNextBtn').disabled = false;
+  }
+}
+
+// CODE (slide 8)
+function checkCode(){
+  const val = document.getElementById('codeInput').value.trim();
+  const fb = document.getElementById('codeFeedback');
+  const succ = document.getElementById('codeSuccess');
+  const btn = document.getElementById('transferNextBtn');
+  if(val.toLowerCase() === 'мануфактура'){
+    fb.className = 'code-feedback';
+    fb.style.display = 'none';
+    succ.style.display = 'block';
+    btn.disabled = false;
+  } else {
+    succ.style.display = 'none';
+    fb.className = 'code-feedback err';
+    fb.textContent = '❌ Неверный код. Напишите @ihipoo в Telegram, чтобы получить правильный.';
+    btn.disabled = true;
+  }
+}
+
+// SUBS (slide 9) — full page
+function openSub(n){
+  currentSub = n;
+  const d = subData[n];
+  document.getElementById('subPageContent').innerHTML = `
+    <div style="font-size:40px;margin-bottom:10px">${d.icon}</div>
+    <h2 style="font-size:22px;font-weight:800;margin-bottom:16px;color:var(--text)">${d.title}</h2>
+    ${d.content}`;
+  document.getElementById('subPageBreadcrumb').textContent = `Канал ${n} из 5 — ${d.title}`;
+  const page = document.getElementById('subPage');
+  page.style.display = 'block';
+  page.scrollTop = 0;
+}
+function closeSub(){
+  document.getElementById('subPage').style.display = 'none';
+  currentSub = null;
+}
+function markSubDone(){
+  if(!currentSub) return;
+  subsDone.add(currentSub);
+  document.getElementById('sub-' + currentSub).classList.add('done-sub');
+  document.getElementById('subCheck-' + currentSub).textContent = '✓';
+  closeSub();
+  if(subsDone.size === 5){
+    document.getElementById('subNote').textContent = '✅ Все каналы изучены!';
+    document.getElementById('completionMsg').style.display = 'block';
+    // slide9NextBtn will be shown only after action plan is viewed
+    updateProgress();
+    buildNav();
+  }
+}
+
+function checkSecret(){
+  const val = document.getElementById('secretInput').value.trim();
+  const fb = document.getElementById('secretFeedback');
+  const content = document.getElementById('secretContent');
+  if(val.toLowerCase() === 'мануфактура'){
+    fb.style.display = 'none';
+    content.style.display = 'block';
+    document.getElementById('secretInput').closest('div').style.display = 'none';
+    completed.add(10);
+    updateProgress();
+    buildNav();
+  } else {
+    fb.className = 'code-feedback err';
+    fb.textContent = '❌ Неверный пароль. Напишите @ihipoo в Telegram.';
+  }
+}
+
+function finishTraining(){
+  alert('🎉 Поздравляем!\n\nВы успешно прошли партнёрское обучение Мануфактуры.\n\nТеперь вы готовы привлекать первых клиентов и зарабатывать пассивный доход!\n\nПишите @ihipoo — вперёд к первой сделке! 🚀');
+}
+
+buildNav();
+updateProgress();
+
+// ACTION PLAN SLIDESHOW
+const apSlides = [
+  {day:'День 1',emoji:'✈️',time:'~1 час',title:'Тёплый круг в Telegram',color:'#0088cc',bg:'#e8f4fd',border:'#bfdbfe',
+   items:['Открой Telegram и пройдись по всем контактам сверху вниз','Напиши 50 тёплым контактам готовое сообщение','Не жди ответов — просто пиши и двигайся дальше']},
+  {day:'День 2',emoji:'📋',time:'~1,5 часа',title:'Авито + WhatsApp',color:'#16a34a',bg:'#f0fdf4',border:'#bbf7d0',
+   items:['Размести 10 объявлений на Авито в крупных городах','Напиши 50 тёплым контактам в WhatsApp — да, он ещё работает, там читают и отвечают','Используй то же самое готовое сообщение']},
+  {day:'День 3',emoji:'🎰',time:'~1 час',title:'ВКонтакте + Лотерея',color:'#7c3aed',bg:'#f5f3ff',border:'#ddd6fe',
+   items:['Напиши 50 тёплым контактам во ВКонтакте','Выложи лотерею в сторис — бесплатный аудит системы продаж','Попроси 2–3 знакомых поделиться у себя']},
+  {day:'День 4',emoji:'🗺️',time:'~30 минут',title:'Авито × 2 + Тематические чаты',color:'#f97316',bg:'#fff7ed',border:'#fed7aa',
+   items:['Создай ещё 10 объявлений на Авито в других городах','Найди тематические чаты в Telegram и ВКонтакте — предприниматели, продажи, бизнес','Посмотри профили участников, выбери подходящих']},
+  {day:'День 5',emoji:'🌐',time:'~20 минут',title:'Нетворкинг',color:'#0891b2',bg:'#ecfeff',border:'#a5f3fc',
+   items:['Напиши 15 потенциальным клиентам из тематических чатов','Найди ближайшее бизнес-мероприятие в своём городе и запишись','Ты уже запустил паутину — первые ответы уже идут']},
+  {day:'Итог',emoji:'🕸️',time:'',title:'Ваша паутина работает',isResult:true}
+];
+let apCurrent = 0;
+
+function renderApSlide(){
+  const s = apSlides[apCurrent];
+  document.getElementById('apDots').innerHTML = apSlides.map((_,i) =>
+    '<div style="width:'+(i===apCurrent?24:8)+'px;height:8px;border-radius:99px;background:'+(i===apCurrent?'var(--accent)':'var(--border)')+';transition:all 0.3s"></div>'
+  ).join('');
+  document.getElementById('apPrevBtn').style.visibility = apCurrent===0?'hidden':'visible';
+  document.getElementById('apNextBtn').textContent = apCurrent===apSlides.length-1?'✕ Закрыть':'Далее →';
+  let html='';
+  if(s.isResult){
+    html='<div style="text-align:center;margin-bottom:16px"><h3 style="font-size:20px;font-weight:800;color:var(--text);margin-bottom:4px">Ваша паутина запущена</h3><p style="font-size:13px;color:var(--muted);line-height:1.5">Все каналы работают одновременно — клиенты приходят со всех сторон</p></div>'
+    +'<div style="position:relative;width:100%;max-width:420px;margin:0 auto 18px">'
+    +'<svg viewBox="0 0 420 360" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block">'
+    // defs
+    +'<defs>'
+    +'<marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#2563eb" opacity="0.7"/></marker>'
+    +'<filter id="sh"><feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#2563eb" flood-opacity="0.15"/></filter>'
+    +'</defs>'
+    // arrows from channels to center
+    +'<line x1="80" y1="70" x2="185" y2="158" stroke="#2563eb" stroke-width="2" stroke-dasharray="5,3" opacity="0.5" marker-end="url(#arr)"/>'
+    +'<line x1="210" y1="40" x2="210" y2="148" stroke="#2563eb" stroke-width="2" stroke-dasharray="5,3" opacity="0.5" marker-end="url(#arr)"/>'
+    +'<line x1="340" y1="70" x2="235" y2="158" stroke="#2563eb" stroke-width="2" stroke-dasharray="5,3" opacity="0.5" marker-end="url(#arr)"/>'
+    +'<line x1="75" y1="260" x2="182" y2="202" stroke="#2563eb" stroke-width="2" stroke-dasharray="5,3" opacity="0.5" marker-end="url(#arr)"/>'
+    +'<line x1="210" y1="310" x2="210" y2="222" stroke="#2563eb" stroke-width="2" stroke-dasharray="5,3" opacity="0.5" marker-end="url(#arr)"/>'
+    +'<line x1="345" y1="260" x2="238" y2="202" stroke="#2563eb" stroke-width="2" stroke-dasharray="5,3" opacity="0.5" marker-end="url(#arr)"/>'
+    // center person circle
+    +'<circle cx="210" cy="185" r="48" fill="white" stroke="#2563eb" stroke-width="2.5" filter="url(#sh)"/>'
+    // person icon (head + body)
+    +'<circle cx="210" cy="168" r="13" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>'
+    +'<path d="M183,207 Q183,192 210,192 Q237,192 237,207" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>'
+    +'<text x="210" y="226" text-anchor="middle" font-size="9" font-weight="700" fill="#2563eb" font-family="Manrope,sans-serif">ВЫ</text>'
+    // channel bubbles
+    // TG top-left
+    +'<rect x="30" y="28" width="100" height="60" rx="14" fill="#e8f4fd" stroke="#0088cc" stroke-width="1.5"/>'
+    +'<text x="80" y="52" text-anchor="middle" font-size="20">✈️</text>'
+    +'<text x="80" y="73" text-anchor="middle" font-size="11" font-weight="700" fill="#0f172a" font-family="Manrope,sans-serif">Telegram</text>'
+    // WA top-center
+    +'<rect x="160" y="8" width="100" height="60" rx="14" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.5"/>'
+    +'<text x="210" y="32" text-anchor="middle" font-size="20">📱</text>'
+    +'<text x="210" y="53" text-anchor="middle" font-size="11" font-weight="700" fill="#0f172a" font-family="Manrope,sans-serif">WhatsApp</text>'
+    // VK top-right
+    +'<rect x="290" y="28" width="100" height="60" rx="14" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/>'
+    +'<text x="340" y="52" text-anchor="middle" font-size="20">🔵</text>'
+    +'<text x="340" y="73" text-anchor="middle" font-size="11" font-weight="700" fill="#0f172a" font-family="Manrope,sans-serif">ВКонтакте</text>'
+    // Avito bottom-left
+    +'<rect x="25" y="232" width="100" height="60" rx="14" fill="#fff7ed" stroke="#f97316" stroke-width="1.5"/>'
+    +'<text x="75" y="256" text-anchor="middle" font-size="20">📋</text>'
+    +'<text x="75" y="277" text-anchor="middle" font-size="11" font-weight="700" fill="#0f172a" font-family="Manrope,sans-serif">Авито</text>'
+    // Chats bottom-center
+    +'<rect x="160" y="292" width="100" height="60" rx="14" fill="#f0f9ff" stroke="#0891b2" stroke-width="1.5"/>'
+    +'<text x="210" y="316" text-anchor="middle" font-size="20">💬</text>'
+    +'<text x="210" y="337" text-anchor="middle" font-size="11" font-weight="700" fill="#0f172a" font-family="Manrope,sans-serif">Чаты</text>'
+    // Lottery bottom-right
+    +'<rect x="295" y="232" width="100" height="60" rx="14" fill="#f5f3ff" stroke="#7c3aed" stroke-width="1.5"/>'
+    +'<text x="345" y="256" text-anchor="middle" font-size="20">🎰</text>'
+    +'<text x="345" y="277" text-anchor="middle" font-size="11" font-weight="700" fill="#0f172a" font-family="Manrope,sans-serif">Лотерея</text>'
+    +'</svg>'
+    +'</div>'
+    +'<div style="background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:1.5px solid #86efac;border-radius:14px;padding:16px;text-align:center"><div style="font-size:15px;font-weight:800;color:#15803d;margin-bottom:8px">⏱️ Когда ждать первых клиентов?</div><p style="font-size:13.5px;color:#166534;line-height:1.75">Как правило, если всё сделать по рекомендациям — <strong>первые клиенты приходят уже через неделю</strong>.<br>Но есть и те, у кого это получалось уже <strong>на второй день</strong> 🚀</p></div>';
+  } else {
+    html='<div style="display:flex;align-items:center;gap:12px;margin-bottom:18px"><div style="width:52px;height:52px;border-radius:14px;background:'+s.bg+';border:2px solid '+s.border+';display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0">'+s.emoji+'</div><div><div style="font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:'+s.color+';margin-bottom:2px">'+s.day+(s.time?' · '+s.time:'')+'</div><div style="font-size:18px;font-weight:800;color:var(--text)">'+s.title+'</div></div></div>'
+    +'<div style="display:flex;flex-direction:column;gap:10px">'
+    +s.items.map(function(item,i){return '<div style="display:flex;gap:12px;align-items:flex-start;background:'+s.bg+';border:1.5px solid '+s.border+';border-radius:11px;padding:13px 14px"><div style="width:24px;height:24px;border-radius:50%;background:'+s.color+';color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px">'+(i+1)+'</div><div style="font-size:13px;color:var(--text);line-height:1.65">'+item+'</div></div>';}).join('')
+    +'</div>';
+  }
+  document.getElementById('apSlideContent').innerHTML=html;
+}
+function openActionPlan(){apCurrent=0;renderApSlide();document.getElementById('actionPlanModal').style.display='block';document.body.style.overflow='hidden';}
+function closeActionPlan(){
+  document.getElementById('actionPlanModal').style.display='none';
+  document.body.style.overflow='';
+  var sb=document.getElementById('secretBlockReveal');if(sb)sb.style.display='block';
+  var nb=document.getElementById('slide9NextBtn');if(nb){nb.style.display='inline-flex';}
+  completed.add(9);updateProgress();buildNav();
+}
+function apNext(){if(apCurrent<apSlides.length-1){apCurrent++;renderApSlide();}else closeActionPlan();}
+function apPrev(){if(apCurrent>0){apCurrent--;renderApSlide();}}
+</script>
+</body>
+</html>
